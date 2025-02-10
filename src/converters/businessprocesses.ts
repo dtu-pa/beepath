@@ -70,7 +70,7 @@ export async function getNlTextConvertedToDialect(nlText: string): Promise<any> 
 	});
 
 	const result = await generateObject({
-		model: openai("gpt-4o-mini-2024-07-18", {
+		model: openai("gpt-4o-2024-08-06", {
 			structuredOutputs: true,
 		}),
 		schemaName: "dialect",
