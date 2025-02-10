@@ -150,7 +150,7 @@ export function tpn2graphviz(tpnData: string): string {
 			const inputPlaces = transitionMatch[2].trim().replace(/["']/g, "").split(/\s+/);
 			const outputPlaces = transitionMatch[3].trim().replace(/["']/g, "").split(/\s+/);
 
-			if (transLabel == "") {
+			if (transLabel == "" || transLabel.startsWith("silent__")) {
 				dotOutput.push(
 					`\t"${transId}" [shape="box",label="",height=".4",width=".1",style="filled",fillcolor="black"];`
 				);
