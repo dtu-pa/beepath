@@ -10,9 +10,12 @@ import { SharedModelStorage } from "./grammar/SharedModelStorage";
 import { SYSTEM_TEXT } from "./grammar/systemText";
 import { createOpenAI } from "@ai-sdk/openai";
 import { jsonSchema, generateObject } from "ai";
-// // import { schema } from "./grammar/JsonSchemaActivities";
 
 const ERROR_MESSAGE = "ERROR generating the model:\n";
+
+// Function written by Ana Maria Sima and Antonio Grama for their master thesis
+// entitled "Optimization of natural language descriptions of business processes"
+// source code at https://github.com/Toni751/Thesis-WebApp
 
 export async function getConvertedText(text: string): Promise<string[][]> {
 	const modelStorage = SharedModelStorage.getInstance();
@@ -40,6 +43,10 @@ export async function getConvertedText(text: string): Promise<string[][]> {
 
 	return conversions;
 }
+
+// Function written by Ana Maria Sima and Antonio Grama for their master thesis
+// entitled "Optimization of natural language descriptions of business processes"
+// source code at https://github.com/Toni751/Thesis-WebApp
 
 export async function getNlTextConvertedToDialect(nlText: string): Promise<any> {
 	const shallowSchema = {
