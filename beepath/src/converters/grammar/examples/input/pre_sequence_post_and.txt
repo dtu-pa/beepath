@@ -1,0 +1,9 @@
+The following textual description follows the closed-world assumption, meaning that only the activities specified can be executed in the specified order. Any possible activity and execution that is not specified is considered impossible.
+Initially start "I".
+
+(SILENT_C_D): "C" or "D".
+
+After "I" ends, immediately start "A" and start "B" and start (SILENT_C_D).
+After "A" ends and "B" ends and (SILENT_C_D) ends, immediately start "E".
+
+After "E" ends, the process finishes.
