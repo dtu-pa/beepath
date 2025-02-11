@@ -1,8 +1,5 @@
 <template>
 	<h1 class="mb-3">Modelling of Business Processes</h1>
-	<v-alert v-if="!isTokenConfigured" closable
-		text="Configure the ChatGPT API Token and reload the page in order to use the system." type="error"
-		variant="tonal" class="mb-3"></v-alert>
 
 	<div class="d-flex flex-row flex-fill" style="height: 90%;">
 		<v-tabs v-model="tab" class="mr-3" direction="vertical" bg-color="surface-light">
@@ -22,6 +19,9 @@
 
 		<v-tabs-window v-model="tab" class="flex-fill" style="height: 100%;">
 			<v-tabs-window-item value="nl" class="flex-fill">
+				<v-alert v-if="!isTokenConfigured" closable
+					text="Configure the ChatGPT API Token and reload the page in order to use the system." type="error"
+					variant="tonal" class="mb-3"></v-alert>
 				<v-container class="d-flex flex-column" style="height: 100%;">
 					<p class="mb-2">Natural language description of the process:</p>
 					<v-textarea v-model="textualDescription" class="flex-grow-1"></v-textarea>
@@ -96,9 +96,6 @@ export default {
 			});
 		},
 		processRestrictedNaturalLanguage() {
-			if (!this.checkAPITokenAvailable()) {
-				return;
-			}
 			this.loading = true;
 			getConvertedText(this.restrictedLanguage).then(response => {
 				this.petriNetTpn = response[0][0];
