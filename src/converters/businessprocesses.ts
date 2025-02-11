@@ -1,4 +1,4 @@
-import { ANTLRInputStream, CommonTokenStream } from "antlr4ts";
+import { ANTLRInputStream, CharStreams, CommonTokenStream } from "antlr4ts";
 import { ParseTreeWalker } from "antlr4ts/tree/ParseTreeWalker";
 import { MScGrammarLexer } from "./grammar/generated/MScGrammarLexer";
 import { MScGrammarParser } from "./grammar/generated/MScGrammarParser";
@@ -13,6 +13,30 @@ import { jsonSchema, generateObject } from "ai";
 import { BPMNListener } from "./grammar/BPMNListener";
 
 const ERROR_MESSAGE = "ERROR generating the model:\n";
+
+export function checkSyntax(text: string) {
+	let inputStream = CharStreams.fromString(text);
+	let lexer = new MScGrammarLexer(inputStream);
+	let tokenStream = new CommonTokenStream(lexer);
+	let parser = new MScGrammarParser(tokenStream);
+
+	const errorListener = {
+        syntaxErrors: [] as string[], // Store errors
+
+        syntaxError: function (recognizer: any, offendingSymbol: any, line: number, charPositionInLine: number, msg: string, e: any) {
+            this.syntaxErrors.push(`Syntax error at line ${line}:${charPositionInLine} - ${msg}`);
+        }
+    };
+	parser.removeErrorListeners();
+	parser.addErrorListener(errorListener);
+
+	parser.description();
+	if (errorListener.syntaxErrors.length > 0) {
+		return { state: false, errors: errorListener.syntaxErrors };
+	} else {
+		return { state: true };
+	}
+}
 
 // Function written by Ana Maria Sima and Antonio Grama for their master thesis
 // entitled "Optimization of natural language descriptions of business processes"

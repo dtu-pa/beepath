@@ -37,6 +37,10 @@
 					<p class="mb-2">Restricted natural language:</p>
 					<prism-editor class="editor flex-grow-1 line-numbers" v-model="restrictedLanguage"
 						:highlight="highlighter" :line-numbers="false"></prism-editor>
+					<div v-if="syntaxErrors.length > 0">
+						<p class="text-h6">Syntax Error</p>
+						<pre v-html="syntaxErrors.join('\n')"></pre>
+					</div>
 					<v-btn class="align-self-end" color="primary" @click="processRestrictedNaturalLanguage">
 						Convert to model
 						<v-icon class="ml-1" icon="mdi-arrow-right" />
@@ -71,7 +75,7 @@ import "vue-prism-editor/dist/prismeditor.min.css";
 import "../highlights/prism-vs.css";
 import "../highlights/businessprocess.js";
 
-import { getNlTextConvertedToDialect, getConvertedText } from '../converters/businessprocesses';
+import { getNlTextConvertedToDialect, getConvertedText, checkSyntax } from '../converters/businessprocesses';
 
 export default {
 	name: 'BusinessProcess',
@@ -87,6 +91,7 @@ export default {
 		bpmn: '',
 		bpmn_xml: '',
 		loading: false,
+		syntaxErrors: [],
 		isTokenConfigured: localStorage.getItem("chatgpt-token")
 	}),
 	methods: {
@@ -102,6 +107,13 @@ export default {
 			});
 		},
 		processRestrictedNaturalLanguage() {
+			this.syntaxErrors = [];
+			let result = checkSyntax(this.restrictedLanguage);
+			if (!result.state) {
+				this.syntaxErrors = result.errors;
+				return;
+			}
+			
 			this.loading = true;
 			getConvertedText(this.restrictedLanguage).then(response => {
 				this.petriNetTpn = response[0][0];
