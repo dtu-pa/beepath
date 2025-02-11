@@ -6,6 +6,9 @@ import { SharedModelStorage } from "./SharedModelStorage";
 import { HelperFunctions } from "./HelperFunctions";
 import { ActivityType } from "./model/ActivityType";
 import { Activity } from "./model/Activity";
+import BpmnModdle from 'bpmn-moddle';
+import { Writer } from 'moddle-xml';
+  
 
 export enum SUBPROCESS_BORDERS {
 	IN,
@@ -18,7 +21,7 @@ export class BPMNListener implements SentenceParser {
 	private static readonly END_EVENT = "bpmn_end";
 
 	private progress: number = 0;
-	private tasks: Map<string,string> = new Map<string,string>();
+	private tasks: Map<string, string> = new Map<string, string>();
 	private gateways: Set<string> = new Set<string>();
 	private flows: Set<string> = new Set<string>();
 
@@ -123,7 +126,7 @@ export class BPMNListener implements SentenceParser {
 
 	handlePreSequencePostAnd(): void {
 		let idGateway = this.createAndGateway();
-		for(const toActivity of this.currentStatement.getPreActivities()) {
+		for (const toActivity of this.currentStatement.getPreActivities()) {
 			this.addFlow(idGateway, this.getOrCreateActivity(toActivity, SUBPROCESS_BORDERS.IN));
 		}
 		for (const postActivity of this.currentStatement.getPostActivities()) {
@@ -294,7 +297,7 @@ export class BPMNListener implements SentenceParser {
 		fontname="sans-serif"
 	];`
 		for (const gateway of this.gateways) {
-			output = output + `\n${gateway.id} [label="${gateway.type == "PARALLEL"? "+" : "&times;"}"];`;
+			output = output + `\n${gateway.id} [label="${gateway.type == "PARALLEL" ? "+" : "&times;"}"];`;
 		}
 
 		// adding edges
@@ -309,6 +312,105 @@ export class BPMNListener implements SentenceParser {
 		output = output + "\n}";
 
 		this.modelStorage.addOutputText(output);
+		this.modelStorage.addOutputText(this.getBPMNModel());
+	}
+
+	getBPMNModel(): string {
+
+		const moddle = new BpmnModdle();
+
+		let allElements = new Map<string, any>();
+		let elements = [];
+		let shapes = [];
+
+		let i = 0;
+		// add tasks
+		for (const label of this.tasks.keys()) {
+			let element = moddle.create('bpmn:Task', { id: this.tasks.get(label), name: label });
+			elements.push(element);
+			allElements.set(this.tasks.get(label), element);
+			shapes.push(moddle.create('bpmndi:BPMNShape', {
+				id: this.tasks.get(label) + "_di",
+				bpmnElement: element,
+				bounds: moddle.create('dc:Bounds', { x: 200 * i, y: 100 * i, width: 80, height: 60 })
+			}));
+			i++;
+		}
+		// add gateways
+		for (const gateway of this.gateways) {
+			let element = moddle.create((gateway.type === 'PARALLEL' ? 'bpmn:ParallelGateway' : 'bpmn:ExclusiveGateway'), { id: gateway.id });
+			elements.push(element);
+			allElements.set(gateway.id, element);
+			shapes.push(moddle.create('bpmndi:BPMNShape', {
+				id: gateway.id + "_di",
+				bpmnElement: element,
+				bounds: moddle.create('dc:Bounds', { x: 200 * i, y: 100 * i, width: 50, height: 50 })
+			}));
+			i++;
+		}
+		// add start and end events
+		let start_element = moddle.create('bpmn:StartEvent', { id: BPMNListener.START_EVENT });
+		elements.push(start_element);
+		allElements.set(BPMNListener.START_EVENT, start_element);
+		shapes.push(moddle.create('bpmndi:BPMNShape', {
+			id: BPMNListener.START_EVENT + "_di",
+			bpmnElement: start_element,
+			bounds: moddle.create('dc:Bounds', { x: 100, y: 100, width: 36, height: 36 })
+		}));
+		let end_element = moddle.create('bpmn:EndEvent', { id: BPMNListener.END_EVENT });
+		elements.push(end_element);
+		allElements.set(BPMNListener.END_EVENT, end_element);
+		shapes.push(moddle.create('bpmndi:BPMNShape', {
+			id: BPMNListener.END_EVENT + "_di",
+			bpmnElement: end_element,
+			bounds: moddle.create('dc:Bounds', { x: 350, y: 100, width: 36, height: 36 })
+		}));
+		// add flows
+		for (const flow of this.flows) {
+			let element = moddle.create('bpmn:SequenceFlow', {
+				id: flow.source + "_" + flow.target,
+				sourceRef: allElements.get(flow.source),
+				targetRef: allElements.get(flow.target)
+			});
+			elements.push(element);
+			shapes.push(moddle.create('bpmndi:BPMNEdge', {
+				id: flow.source + "_" + flow.target + "_di",
+				bpmnElement: element,
+				sourceElement: allElements.get(flow.source),
+				targetElement: allElements.get(flow.target),
+				waypoint: [] //moddle.create('dc:Point', { x: 100, y: 100 }), moddle.create('dc:Point', { x: 200, y: 200 })]
+			}));
+		}
+
+		// Create a BPMN model
+		const process = moddle.create('bpmn:Process', {
+			id: 'Process_1',
+			isExecutable: true,
+			flowElements: elements,
+		});
+
+		// Create BPMN diagram elements (needed for visualization)
+		const bpmnDiagram = moddle.create('bpmndi:BPMNDiagram', {
+			id: 'BPMNDiagram_1',
+			bpmnElement: process
+		});
+		const bpmnPlane = moddle.create('bpmndi:BPMNPlane', {
+			id: 'BPMNPlane_1',
+			bpmnElement: process
+		});
+
+		// Add shapes to the diagram
+		bpmnPlane.set('planeElement', shapes);
+		bpmnDiagram.set('plane', bpmnPlane);
+
+		// Create BPMN definitions
+		const definitions = moddle.create('bpmn:Definitions', {
+			targetNamespace: 'http://bpmn.io/schema/bpmn',
+			rootElements: [process, bpmnDiagram]
+		});
+
+		var writer = new Writer();
+		return writer.toXML(definitions);
 	}
 
 	private getId(): string {
@@ -350,7 +452,7 @@ export class BPMNListener implements SentenceParser {
 	private getOrCreateActivityFromLabel(label: string): string {
 		if (this.tasks.has(label)) {
 			return this.tasks.get(label);
-		} else {		
+		} else {
 			const id = this.getId();
 			this.tasks.set(label, id);
 			return id;
@@ -359,17 +461,17 @@ export class BPMNListener implements SentenceParser {
 
 	private createAndGateway(): string {
 		const id = this.getId();
-		this.gateways.add({id: id, type: "PARALLEL"});
+		this.gateways.add({ id: id, type: "PARALLEL" });
 		return id;
 	}
 
 	private createXorGateway(): string {
 		const id = this.getId();
-		this.gateways.add({id: id, type: "EXCLUSIVE"});
+		this.gateways.add({ id: id, type: "EXCLUSIVE" });
 		return id;
 	}
 
 	private addFlow(source: string, target: string): void {
-		this.flows.add({source: source, target: target});
+		this.flows.add({ source: source, target: target });
 	}
 }

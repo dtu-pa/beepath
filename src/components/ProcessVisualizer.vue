@@ -17,6 +17,10 @@
 		</v-tabs-window-item>
 		<v-tabs-window-item value="bpmn" class="flex-fill">
 			<v-container class="d-flex flex-column" style="height: 90%;">
+				<v-btn class="align-self-end" elevation="0" outlined @click="handleDownloadFile('BPMN')">
+					<v-icon class="mr-2" icon="mdi-download" />
+					Download .bpmn
+				</v-btn>
 				<div class="flex-grow-1 img-container mt-3" v-html="bpmn_img"></div>
 			</v-container>
 		</v-tabs-window-item>
@@ -48,6 +52,10 @@ export default {
 			required: true
 		},
 		bpmn: {
+			type: String,
+			required: true
+		},
+		bpmn_xml: {
 			type: String,
 			required: true
 		}
@@ -98,6 +106,9 @@ export default {
 			} else if (type === 'DECLARE') {
 				model = this.declare;
 				fileName = "DeclareModel.decl";
+			} else if (type === 'BPMN') {
+				model = this.bpmn_xml;
+				fileName = "process.bpmn";
 			}
 
 			const fileBlob = new Blob([model], {

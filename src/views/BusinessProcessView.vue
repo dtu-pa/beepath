@@ -46,7 +46,11 @@
 
 			<v-tabs-window-item value="model" class="flex-fill">
 				<v-container>
-					<ProcessVisualizer :petrinet="petriNetTpn" :declare="declare" :bpmn="bpmn" />
+					<ProcessVisualizer
+						:petrinet="petriNetTpn" 
+						:declare="declare" 
+						:bpmn="bpmn"
+						:bpmn_xml="bpmn_xml" />
 				</v-container>
 			</v-tabs-window-item>
 		</v-tabs-window>
@@ -81,6 +85,7 @@ export default {
 		petriNetTpn: '',
 		declare: '',
 		bpmn: '',
+		bpmn_xml: '',
 		loading: false,
 		isTokenConfigured: localStorage.getItem("chatgpt-token")
 	}),
@@ -102,6 +107,7 @@ export default {
 				this.petriNetTpn = response[0][0];
 				this.declare = response[1][0];
 				this.bpmn = response[2][0];
+				this.bpmn_xml = response[2][1];
 				this.loading = false;
 				this.tab = 'model';
 			});
