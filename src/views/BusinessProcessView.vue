@@ -46,7 +46,7 @@
 
 			<v-tabs-window-item value="model" class="flex-fill">
 				<v-container>
-					<ProcessVisualizer :petrinet="petriNetTpn" :declare="declare" />
+					<ProcessVisualizer :petrinet="petriNetTpn" :declare="declare" :bpmn="bpmn" />
 				</v-container>
 			</v-tabs-window-item>
 		</v-tabs-window>
@@ -80,6 +80,7 @@ export default {
 		restrictedLanguage: 'The following textual description follows the closed-world assumption, meaning that only the activities specified can be executed in the specified order. Any possible activity and execution that is not specified is considered impossible.\n\nInitially start "receive order".\n\nAfter "receive order" ends, immediately start "pick items" and start "send invoice".\nAfter "pick items" ends and "send invoice" ends, immediately start "close order".\n\nAfter "close order" ends, the process finishes.',
 		petriNetTpn: '',
 		declare: '',
+		bpmn: '',
 		loading: false,
 		isTokenConfigured: localStorage.getItem("chatgpt-token")
 	}),
@@ -100,6 +101,7 @@ export default {
 			getConvertedText(this.restrictedLanguage).then(response => {
 				this.petriNetTpn = response[0][0];
 				this.declare = response[1][0];
+				this.bpmn = response[2][0];
 				this.loading = false;
 				this.tab = 'model';
 			});

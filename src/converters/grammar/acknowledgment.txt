@@ -1,1 +1,1 @@
-All files in this folder have been written by Ana Maria Sima and Antonio Grama for their master thesis entitled "Optimization of natural language descriptions of business processes" source code at https://github.com/Toni751/Thesis-WebApp.
+All files referring to Petri net and Declare have been written by Ana Maria Sima and Antonio Grama for their master thesis entitled "Optimization of natural language descriptions of business processes" source code at https://github.com/Toni751/Thesis-WebApp.

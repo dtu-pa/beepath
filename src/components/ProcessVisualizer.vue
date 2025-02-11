@@ -1,5 +1,6 @@
 <template>
 	<v-tabs v-model="tab">
+		<v-tab value="bpmn">BPMN</v-tab>
 		<v-tab value="petri">Petri net</v-tab>
 		<v-tab value="declare">Declare</v-tab>
 	</v-tabs>
@@ -12,6 +13,11 @@
 					Download .tpn
 				</v-btn>
 				<div class="flex-grow-1 img-container mt-3" v-html="petrinet_img"></div>
+			</v-container>
+		</v-tabs-window-item>
+		<v-tabs-window-item value="bpmn" class="flex-fill">
+			<v-container class="d-flex flex-column" style="height: 90%;">
+				<div class="flex-grow-1 img-container mt-3" v-html="bpmn_img"></div>
 			</v-container>
 		</v-tabs-window-item>
 		<v-tabs-window-item value="declare" class="flex-fill">
@@ -40,13 +46,18 @@ export default {
 		declare: {
 			type: String,
 			required: true
+		},
+		bpmn: {
+			type: String,
+			required: true
 		}
 	},
 	data: () => ({
 		tab: null,
 		petrinet_graphviz: '',
 		petrinet_img: '',
-		declare_img: ''
+		declare_img: '',
+		bpmn_img: '',
 	}),
 
 	methods: {
@@ -58,6 +69,15 @@ export default {
 			}).catch((err) => {
 				console.error(err);
 				this.petrinet_img = null;
+			});
+
+			// render bpmn
+			instance().then(viz => {
+				this.bpmn_img = viz.renderSVGElement(this.bpmn).outerHTML;
+			}).catch((err) => {
+				console.error(err);
+				console.error(this.bpmn);
+				this.bpmn_img = null;
 			});
 
 			// render declare

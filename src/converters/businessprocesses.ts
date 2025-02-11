@@ -10,19 +10,20 @@ import { SharedModelStorage } from "./grammar/SharedModelStorage";
 import { SYSTEM_TEXT } from "./grammar/systemText";
 import { createOpenAI } from "@ai-sdk/openai";
 import { jsonSchema, generateObject } from "ai";
+import { BPMNListener } from "./grammar/BPMNListener";
 
 const ERROR_MESSAGE = "ERROR generating the model:\n";
 
 // Function written by Ana Maria Sima and Antonio Grama for their master thesis
 // entitled "Optimization of natural language descriptions of business processes"
 // source code at https://github.com/Toni751/Thesis-WebApp
-
 export async function getConvertedText(text: string): Promise<string[][]> {
 	const modelStorage = SharedModelStorage.getInstance();
 	const conversions: string[][] = [];
 	const sentenceParsers: SentenceParser[] = [];
 	sentenceParsers.push(new PetriNetListener());
 	sentenceParsers.push(new DeclareListener());
+	sentenceParsers.push(new BPMNListener());
 
 	for (const sentenceParser of sentenceParsers) {
 		modelStorage.clear();
@@ -47,7 +48,6 @@ export async function getConvertedText(text: string): Promise<string[][]> {
 // Function written by Ana Maria Sima and Antonio Grama for their master thesis
 // entitled "Optimization of natural language descriptions of business processes"
 // source code at https://github.com/Toni751/Thesis-WebApp
-
 export async function getNlTextConvertedToDialect(nlText: string): Promise<any> {
 	const shallowSchema = {
 		type: "object",
