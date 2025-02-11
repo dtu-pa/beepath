@@ -274,7 +274,7 @@ export class BPMNListener implements SentenceParser {
 		width="0.5",
 		fontcolor="#303030",
 		fontname="sans-serif",
-		fontsize="12.0",
+		fontsize="10.0",
 		penwidth=1
 	];`;
 
