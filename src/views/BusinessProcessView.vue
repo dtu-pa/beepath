@@ -49,10 +49,11 @@
 			</v-tabs-window-item>
 
 			<v-tabs-window-item value="model" class="flex-fill">
-				<v-container>
+				<v-container class="d-flex flex-column" style="height: 100%;">
 					<ProcessVisualizer
 						:petrinet="petriNetTpn" 
 						:declare="declare" 
+						:declare_js = "declare_js"
 						:bpmn="bpmn"
 						:bpmn_xml="bpmn_xml" />
 				</v-container>
@@ -88,6 +89,7 @@ export default {
 		restrictedLanguage: 'The following textual description follows the closed-world assumption, meaning that only the activities specified can be executed in the specified order. Any possible activity and execution that is not specified is considered impossible.\n\nInitially start "receive order".\n\nAfter "receive order" ends, immediately start "pick items" and start "send invoice".\nAfter "pick items" ends and "send invoice" ends, immediately start "close order".\n\nAfter "close order" ends, the process finishes.',
 		petriNetTpn: '',
 		declare: '',
+		declare_js: '',
 		bpmn: '',
 		bpmn_xml: '',
 		loading: false,
@@ -118,6 +120,7 @@ export default {
 			getConvertedText(this.restrictedLanguage).then(response => {
 				this.petriNetTpn = response[0][0];
 				this.declare = response[1][0];
+				this.declare_js = response[1][1];
 				this.bpmn = response[2][0];
 				this.bpmn_xml = response[2][1];
 				this.loading = false;

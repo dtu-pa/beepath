@@ -1,5 +1,5 @@
 <template>
-	<v-tabs v-model="tab">
+	<v-tabs v-model="tab" @update:modelValue="onTabChange">
 		<v-tab value="bpmn">BPMN</v-tab>
 		<v-tab value="petri">Petri net</v-tab>
 		<v-tab value="declare">Declare</v-tab>
@@ -7,7 +7,7 @@
 
 	<v-tabs-window v-model="tab" class="flex-fill" style="height: 100%;">
 		<v-tabs-window-item value="petri" class="flex-fill">
-			<v-container class="d-flex flex-column" style="height: 90%;">
+			<v-container class="d-flex flex-column" style="height: 100%;">
 				<v-btn class="align-self-end" elevation="0" outlined @click="handleDownloadFile('PETRI_NET')">
 					<v-icon class="mr-2" icon="mdi-download" />
 					Download .tpn
@@ -16,7 +16,7 @@
 			</v-container>
 		</v-tabs-window-item>
 		<v-tabs-window-item value="bpmn" class="flex-fill">
-			<v-container class="d-flex flex-column" style="height: 90%;">
+			<v-container class="d-flex flex-column" style="height: 100%;">
 				<v-btn class="align-self-end" elevation="0" outlined @click="handleDownloadFile('BPMN')">
 					<v-icon class="mr-2" icon="mdi-download" />
 					Download .bpmn
@@ -24,13 +24,14 @@
 				<div class="flex-grow-1 img-container mt-3" v-html="bpmn_img"></div>
 			</v-container>
 		</v-tabs-window-item>
-		<v-tabs-window-item value="declare" class="flex-fill">
-			<v-container class="d-flex flex-column" style="height: 90%;">
+		<v-tabs-window-item value="declare" class="flex-fill" style="">
+			<v-container class="d-flex flex-column flex-fill" style="height: 100%;">
 				<v-btn class="align-self-end" elevation="0" outlined @click="handleDownloadFile('DECLARE')">
 					<v-icon class="mr-2" icon="mdi-download" />
 					Download .decl
 				</v-btn>
-				<pre class="flex-grow-1 img-container mt-3" v-html="declare_img"></pre>
+				<!-- <pre class="flex-grow-1 img-container mt-3" v-html="declare_img"></pre> -->
+				<div id="declareContainer" class="flex-fill"></div>
 			</v-container>
 		</v-tabs-window-item>
 	</v-tabs-window>
@@ -40,6 +41,7 @@
 <script>
 import { instance } from "@viz-js/viz";
 import { tpn2graphviz } from '../converters/businessprocesses';
+import { DeclareContainer } from '../libs/declare-js/main.js';
 
 export default {
 	props: {
@@ -48,6 +50,10 @@ export default {
 			required: true
 		},
 		declare: {
+			type: String,
+			required: true
+		},
+		declare_js: {
 			type: String,
 			required: true
 		},
@@ -89,12 +95,6 @@ export default {
 			});
 
 			// render declare
-			// instance().then(viz => {
-			// 	this.declare_img = viz.renderSVGElement(this.declare).outerHTML;
-			// }).catch((err) => {
-			// 	console.error(err);
-			// 	this.declare_img = null;
-			// });
 			this.declare_img = this.declare;
 		},
 		handleDownloadFile(type) {
@@ -122,6 +122,13 @@ export default {
 			link.click();
 			document.body.removeChild(link);
 			window.URL.revokeObjectURL(url);
+		},
+		onTabChange() {
+			if (this.tab === 'declare') {
+				setTimeout(() => {
+					let declare = new DeclareContainer(this.declare_js);
+				}, 100);
+			}
 		}
 	},
 	watch: {
