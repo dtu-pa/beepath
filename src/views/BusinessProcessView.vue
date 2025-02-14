@@ -86,7 +86,7 @@ export default {
 	data: () => ({
 		tab: null,
 		textualDescription: 'The process starts when the warehouse receives an order. \nAfter that, an employee picks all items from the order while another one sends the invoice. \nWhen both the picking and the invoicing are done, the manager closes the order.\nAfter the order is closed, the process finishes.',
-		restrictedLanguage: 'The following textual description follows the closed-world assumption, meaning that only the activities specified can be executed in the specified order. Any possible activity and execution that is not specified is considered impossible.\n\nInitially start "receive order".\n\nAfter "receive order" ends, immediately start "pick items" and start "send invoice".\nAfter "pick items" ends and "send invoice" ends, immediately start "close order".\n\nAfter "close order" ends, the process finishes.',
+		restrictedLanguage: 'The following textual description follows the closed-world assumption, meaning that only the activities specified can be executed in the specified order. Any possible activity and execution that is not specified is considered impossible.\n\nInitially start \"receive order\".\n\nAfter \"receive order\" ends, immediately start \"pick items\" and start \"send invoice\".\nAfter \"pick items\" ends and \"send invoice\" ends, immediately start \"close order\".\n\nActivity \"send invoice\" is performed by \"crm\".\nActivity \"pick items\" is performed by \"crm\".\nActivity \"close order\" is performed by \"email system\".\n\nAfter \"close order\" ends, the process finishes.',
 		petriNetTpn: '',
 		declare: '',
 		declare_js: '',

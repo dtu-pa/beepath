@@ -21,6 +21,7 @@ import {
   SequenceEndActivityExpressionContext,
   SequenceStartActivityExpressionContext,
   StatementContext,
+  BelongStatementContext,
 } from "./generated/MScGrammarParser";
 import { HelperFunctions } from "./HelperFunctions";
 import { Activity } from "./model/Activity";
@@ -268,6 +269,10 @@ export class ContextListener implements MScGrammarListener {
 
   public exitDescription(ctx: DescriptionContext): void {
     this.sentenceParser.printAndSaveModel();
+  }
+
+  public exitBelongStatement(ctx: BelongStatementContext): void {
+	this.sentenceParser.handleRoleForActivity(ctx.role().WORD(), ctx.activity().WORD());
   }
 
   private handleSequenceExpression(activityContext: ActivityContext): void {

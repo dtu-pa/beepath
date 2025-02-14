@@ -10,6 +10,8 @@ export interface SentenceParser {
   handleClosingStatementAnd: () => void;
   handleClosingStatementOr: () => void;
   handleActivity: (activityText: TerminalNode[]) => void;
+  handleRoleForActivity: (roleText: TerminalNode[], activityText: TerminalNode[]) => void;
+
   handleAspDeclaration: (aspId: string) => void;
   handleOspDeclaration: (ospId: string) => void;
 

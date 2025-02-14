@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+	"antlr4ts": "antlr4ts src/converters/grammar/MScGrammar.g4 -o src/converters/grammar/generated/"
   },
   "dependencies": {
     "@ai-sdk/openai": "^1.1.9",
@@ -27,6 +28,7 @@
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.2.1",
     "@vue/tsconfig": "^0.7.0",
+    "antlr4ts-cli": "^0.5.0-alpha.4",
     "typescript": "~5.7.2",
     "vite": "^6.1.0",
     "vite-plugin-node-polyfills": "^0.23.0",

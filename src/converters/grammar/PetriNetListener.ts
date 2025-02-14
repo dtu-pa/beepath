@@ -235,6 +235,8 @@ export class PetriNetListener implements SentenceParser {
     this.handlePreSequencePostOr();
   }
 
+  handleRoleForActivity(roleText: TerminalNode[], activityText: TerminalNode[]): void {}
+
   printAndSaveModel(): void {
     // console.log("Places: ", Array.from(this.places));
     // console.log("Transitions: ", this.modelStorage.getTransitions());

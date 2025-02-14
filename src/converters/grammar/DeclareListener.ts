@@ -162,6 +162,8 @@ export class DeclareListener implements SentenceParser {
     this.handlePreSequencePostOr();
   }
 
+  public handleRoleForActivity(roleText: TerminalNode[], activityText: TerminalNode[]): void {}
+
   public printAndSaveModel(): void {
     let rumOutput: string = "";
     let declareJsOutput: string = "";

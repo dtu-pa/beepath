@@ -24,6 +24,7 @@ export class BPMNListener implements SentenceParser {
 	private tasks: Map<string, string> = new Map<string, string>();
 	private gateways: Set<string> = new Set<string>();
 	private flows: Set<string> = new Set<string>();
+	private roles: Map<string, Set<string>> = new Map<string, Set<string>>(); // role -> activities
 
 	private inputFileName: string;
 	private currentStatement: StatementMetadata;
@@ -232,6 +233,16 @@ export class BPMNListener implements SentenceParser {
 		this.handlePreSequencePostOr();
 	}
 
+	handleRoleForActivity(roleText: TerminalNode[], activityText: TerminalNode[]): void {
+		let role = HelperFunctions.getActivityText(roleText);
+		let activity = HelperFunctions.getActivityText(activityText);
+		if (this.roles.has(role)) {
+			this.roles.get(role).add(activity);
+		} else {
+			this.roles.set(role, new Set([activity]));
+		}
+	}
+
 	printAndSaveModel(): void {
 		// console.log("Places: ", Array.from(this.places));
 		// console.log("Transitions: ", this.modelStorage.getTransitions());
@@ -281,6 +292,21 @@ export class BPMNListener implements SentenceParser {
 		// adding tasks
 		for (const label of this.tasks.keys()) {
 			output = output + `\n${this.tasks.get(label)} [label=<<table border='0'><tr><td height='30'>${label}</td></tr></table>>];`;
+		}
+
+		// adding roles
+		for (const role of this.roles.keys()) {
+			output = output + `\nsubgraph cluster_${role} {
+		label = "${role}";
+    fontname="sans-serif";
+	fontsize="10.0";
+	fontcolor = "#333333";
+	style = "filled";
+    color = "#DDDDDD";\n\n`;
+			for (const activity of this.roles.get(role)) {
+				output = output + `${this.getOrCreateActivityFromLabel(activity)};\n`;
+			}
+			output = output + "\n}";
 		}
 
 		// adding gateways

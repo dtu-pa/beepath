@@ -10,7 +10,7 @@ statementList
 initialStatement
     : 'Initially start ' activity '.' (NEWLINE)*;
 statement
-    : (afterStatement | closingStatement | andSubProcess | orSubProcess) (NEWLINE)*;
+    : (afterStatement | closingStatement | andSubProcess | orSubProcess | belongStatement) (NEWLINE)*;
 closingStatement
     : 'After ' endActivityExpression ', the process finishes.' ;
 
@@ -20,6 +20,8 @@ andSubProcess
     : andSubProcessId ': ' activity ' and ' activity (' and ' activity)*? '.';
 orSubProcess
     : orSubProcessId ': ' activity ' or ' activity (' or ' activity)*? '.';
+belongStatement
+	: 'Activity ' activity ' is performed by ' role '.';
 
 immediatelyExpression
     : 'immediately ' (sequenceStartActivityExpression | andStartActivityExpression | orStartActivityExpression | repeatSinceStartActivityExpression);
@@ -46,11 +48,14 @@ orEndActivityExpression
     : 'either ' (activity | andSubProcessId) ' ends or ' ((activity | andSubProcessId) ' ends or ')*? (activity | andSubProcessId) ' ends';
 
 activity
-    : '"' WORD (SPACE WORD)*? '"' ;
+	: '"' WORD (SPACE WORD)*? '"';
 andSubProcessId
     : '(' WORD (SPACE WORD)*? ')' ;
 orSubProcessId
     : '(' WORD (SPACE WORD)*? ')' ;
+role
+	: '"' WORD (SPACE WORD)*? '"';
+
 WORD
     : [a-zA-Z0-9]+ ;
 SPACE

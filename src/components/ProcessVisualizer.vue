@@ -87,6 +87,7 @@ export default {
 
 			// render bpmn
 			instance().then(viz => {
+				// console.log(this.bpmn);
 				this.bpmn_img = viz.renderSVGElement(this.bpmn).outerHTML;
 			}).catch((err) => {
 				console.error(err);
@@ -132,10 +133,10 @@ export default {
 		}
 	},
 	watch: {
-		petrinet: {
+		bpmn: {
 			immediate: true,
 			handler() {
-				if (this.petrinet !== '' && this.declare !== '') {
+				if (this.petrinet !== '' && this.declare !== '' && this.bpmn !== '') {
 					this.process();
 				}
 			}
