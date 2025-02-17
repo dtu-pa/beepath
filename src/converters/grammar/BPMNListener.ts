@@ -236,6 +236,11 @@ export class BPMNListener implements SentenceParser {
 	handleRoleForActivity(roleText: TerminalNode[], activityText: TerminalNode[]): void {
 		let role = HelperFunctions.getActivityText(roleText);
 		let activity = HelperFunctions.getActivityText(activityText);
+		for (const roleKey of this.roles.keys()) {
+			if (this.roles.get(roleKey).has(activity)) {
+				this.roles.get(roleKey).delete(activity);
+			}
+		}
 		if (this.roles.has(role)) {
 			this.roles.get(role).add(activity);
 		} else {
