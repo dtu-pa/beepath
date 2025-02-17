@@ -17,10 +17,10 @@
 				<v-icon class="mr-1" icon="mdi-chart-sankey-variant" />
 				Business Processes
 			</v-btn>
-			<v-btn text @click="this.$router.push({ name: 'attack-tree' })">
+			<!-- <v-btn text @click="this.$router.push({ name: 'attack-tree' })">
 				<v-icon class="mr-1" icon="mdi-sitemap" />
 				Attack Trees
-			</v-btn>
+			</v-btn> -->
 			<v-menu >
 				<template v-slot:activator="{ props }">
 					<v-btn icon="mdi-dots-vertical" variant="text" v-bind="props"></v-btn>
