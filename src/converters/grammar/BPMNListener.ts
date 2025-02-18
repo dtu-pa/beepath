@@ -355,6 +355,7 @@ export class BPMNListener implements SentenceParser {
 		let shapes = [];
 
 		let i = 0;
+
 		// add tasks
 		for (const label of this.tasks.keys()) {
 			let element = moddle.create('bpmn:Task', { id: this.tasks.get(label), name: label });
@@ -367,6 +368,7 @@ export class BPMNListener implements SentenceParser {
 			}));
 			i++;
 		}
+
 		// add gateways
 		for (const gateway of this.gateways) {
 			let element = moddle.create((gateway.type === 'PARALLEL' ? 'bpmn:ParallelGateway' : 'bpmn:ExclusiveGateway'), { id: gateway.id });
@@ -379,6 +381,7 @@ export class BPMNListener implements SentenceParser {
 			}));
 			i++;
 		}
+
 		// add start and end events
 		let start_element = moddle.create('bpmn:StartEvent', { id: BPMNListener.START_EVENT });
 		elements.push(start_element);
@@ -396,6 +399,7 @@ export class BPMNListener implements SentenceParser {
 			bpmnElement: end_element,
 			bounds: moddle.create('dc:Bounds', { x: 350, y: 100, width: 36, height: 36 })
 		}));
+
 		// add flows
 		for (const flow of this.flows) {
 			let element = moddle.create('bpmn:SequenceFlow', {
@@ -413,12 +417,27 @@ export class BPMNListener implements SentenceParser {
 			}));
 		}
 
+		// add lanes -- currently not exported
+		// const laneSet = moddle.create('bpmn:LaneSet', { id: 'LaneSet_1', lanes: [] });
+		// let lanesTmp = [];
+		// for (const role of this.roles.keys()) {
+		// 	let lane = moddle.create('bpmn:Lane', { id: role, name: role });
+		// 	let laneFlowElements = [];
+		// 	for (const activity of this.roles.get(role)) {
+		// 		laneFlowElements.push(allElements.get(activity));
+		// 	}
+		// 	lane.flowNodeRef = laneFlowElements;
+		// 	lanesTmp.push(lane);
+		// 	laneSet.lanes.push(lane);
+		// }
+
 		// Create a BPMN model
 		const process = moddle.create('bpmn:Process', {
 			id: 'Process_1',
 			isExecutable: true,
 			flowElements: elements,
 		});
+		// process.laneSets = [laneSet];
 
 		// Create BPMN diagram elements (needed for visualization)
 		const bpmnDiagram = moddle.create('bpmndi:BPMNDiagram', {
