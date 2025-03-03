@@ -26,7 +26,7 @@ import { handleFileUpload } from "./interactivity/importMenu.js";
 
 export class DeclareContainer {
 
-    constructor() {
+    constructor(str) {
 
         this.enableEdit = true;
         this.snapToGrid = true;
@@ -35,6 +35,7 @@ export class DeclareContainer {
         this.canvas;
         this.view;
         this.zoomLevel = 1;
+		this.str = str;
 
         this.mode;
         this.editor;
@@ -153,25 +154,25 @@ export class DeclareContainer {
         // generation of random model (activities, existence constraints, relation constraints)
         //const constraintStrings = this.declareModel.generateRandomModel(10, 5, 15);
         
-        const str = `
-        End('hand over car')
-        AtLeastOne('verify problem')
-        ExactlyOne('hand over car')
-        Init('get customer report')
-        ChainResponse('get customer report','verify problem')
-        Precedence('verify problem','ask customer for clarification')
-        AlternateResponse('ask customer for clarification','verify problem')
-        Succession('verify problem','repair car')
-        Response('order spare parts','repair car')
-        ChainSuccession('repair car','check repair')
-        ChainSuccession('check repair','notify customer')
-        ChainSuccession('notify customer','hand over car')
-        NotResponse('repair car','ask customer for clarification')
-        NotResponse('notify customer','repair car')
-        NotResponse('hand over car','repair car')
-        `;
+        // const str = `
+        // End('hand over car')
+        // AtLeastOne('verify problem')
+        // ExactlyOne('hand over car')
+        // Init('get customer report')
+        // ChainResponse('get customer report','verify problem')
+        // Precedence('verify problem','ask customer for clarification')
+        // AlternateResponse('ask customer for clarification','verify problem')
+        // Succession('verify problem','repair car')
+        // Response('order spare parts','repair car')
+        // ChainSuccession('repair car','check repair')
+        // ChainSuccession('check repair','notify customer')
+        // ChainSuccession('notify customer','hand over car')
+        // NotResponse('repair car','ask customer for clarification')
+        // NotResponse('notify customer','repair car')
+        // NotResponse('hand over car','repair car')
+        // `;
 
-        const constraintStrings = str.split(/\r?\n/);
+        const constraintStrings = this.str.split(/\r?\n/);
 
         console.log(constraintStrings);
 

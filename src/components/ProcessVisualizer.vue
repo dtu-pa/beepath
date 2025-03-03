@@ -30,7 +30,6 @@
 					<v-icon class="mr-2" icon="mdi-download" />
 					Download .decl
 				</v-btn>
-				<!-- <pre class="flex-grow-1 img-container mt-3" v-html="declare_img"></pre> -->
 				<div id="declareContainer" class="flex-fill"></div>
 			</v-container>
 		</v-tabs-window-item>
@@ -96,7 +95,7 @@ export default {
 			});
 
 			// render declare
-			this.declare_img = this.declare;
+			// this.declare_img = this.declare;
 		},
 		handleDownloadFile(type) {
 			let model = "";
@@ -127,7 +126,7 @@ export default {
 		onTabChange() {
 			if (this.tab === 'declare') {
 				setTimeout(() => {
-					let declare = new DeclareContainer(this.declare_js);
+					new DeclareContainer(this.declare_js);
 				}, 100);
 			}
 		}
