@@ -43,5 +43,5 @@ ACTIVITY : '"' WORD (' ' WORD)* '"';
 SUBPROCESS_ID: '(' WORD+ ')' ;
 
 WORD : ([a-z] | [A-Z] | [0-9] | '_')+;
-SPACE : (' ' | '\t') -> skip;
+SPACE : (' ' | '\t' | '.') -> skip;
 NEWLINE : ('\r'? '\n' | '\r') -> skip;
