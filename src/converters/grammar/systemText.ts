@@ -2,59 +2,54 @@ export const SYSTEM_TEXT = `You will be provided with a free text description of
 Convert the given text into a structured text which follows the grammar given below between triple quotes. 
 
 """
-grammar MScGrammar ;
-description
-    : leadingText statementList;
+grammar BeePathGrammar;
 
-leadingText
-    : 'The following textual description follows the closed-world assumption, meaning that only the activities specified can be executed in the specified order. Any possible activity and execution that is not specified is considered impossible.' (NEWLINE)*;
+description : leadingText initialStatement statement+ closingStatement;
 
-statementList
-    : initialStatement (statement)*? closingStatement;
-initialStatement
-    : 'Initially start ' activity '.' (NEWLINE)*;
-statement
-    : (afterStatement | closingStatement | andSubProcess | orSubProcess) (NEWLINE)*;
-closingStatement
-    : (sequenceEndActivityExpression | andEndActivityExpression | orEndActivityExpression) ', the process finishes.' ;
+leadingText : '...';
+initialStatement : 'Initially''start' ACTIVITY;
+closingStatement : 'After' ( act_fragment 'ends'
+                           | act_fragment 'ends' ('and' act_fragment 'ends')+
+                           | 'either' act_fragment 'ends' ('or' act_fragment 'ends')+
+                    ) ',''the''process''finishes';
 
-afterStatement
-    : (sequenceEndActivityExpression | andEndActivityExpression | orEndActivityExpression) ', ' (sequenceStartActivityExpression | andStartActivityExpression | orStartActivityExpression | repeatSinceStartActivityExpression | eventuallyExpression) '.';
-andSubProcess
-    : andSubProcessId ': ' activity ' and ' activity (' and ' activity)*? '.';
-orSubProcess
-    : orSubProcessId ': ' activity ' or ' activity (' or ' activity)*? '.';
+statement : sequence
+          | parallelSplit
+          | synchronization
+          | exclusiveChoice
+          | simpleMerge
+          | repeatSince
+          | eventually
+          | andSplitInXorSplit
+          | xorSplitInAndSplit
+          | andJoinInXorJoin
+          | xorJoinInAndJoin
+          | subprocess;
 
-sequenceStartActivityExpression
-    : 'immediately start ' activity;
-andStartActivityExpression
-    : 'immediately start ' (activity | orSubProcessId) ' and start ' (activity | orSubProcessId) (' and start ' (activity | orSubProcessId))*? ;
-orStartActivityExpression
-    : 'immediately either start ' (activity | andSubProcessId) ' or start ' (activity | andSubProcessId) (' or start ' (activity | andSubProcessId))*? ;
-repeatSinceStartActivityExpression
-    : 'immediately repeat since ' activity (' or start ' (activity | andSubProcessId))*?;
-eventuallyExpression
-    : 'eventually start ' activity;
+sequence          : 'After' ACTIVITY 'ends'',''immediately''start' ACTIVITY;
+parallelSplit     : 'After' ACTIVITY 'ends'',''immediately''start' ACTIVITY ('and''start' ACTIVITY)+;
+synchronization   : 'After' ACTIVITY 'ends' ('and' ACTIVITY 'ends')+ ',''immediately''start' ACTIVITY;
+exclusiveChoice   : 'After' ACTIVITY 'ends'',''immediately''either''start' ACTIVITY ('or''start' ACTIVITY)+;
+simpleMerge       : 'After''either' ACTIVITY 'ends' ('or' ACTIVITY 'ends')+ ',''immediately''start' ACTIVITY;
+repeatSince       : 'After' ACTIVITY 'ends'',''immediately''repeat''since' ACTIVITY ('or''start' ACTIVITY)+;
+eventually        : 'After' ACTIVITY 'ends'',''eventually''start' ACTIVITY;
+andSplitInXorSplit: 'After' ACTIVITY 'ends'',''immediately''either''start' act_fragment ('or''start' act_fragment)+;
+xorSplitInAndSplit: 'After' ACTIVITY 'ends'',''immediately''start' act_fragment ('and''start' act_fragment)+;
+andJoinInXorJoin  : 'After''either' act_fragment 'ends' ('or' act_fragment 'ends')+ ',''immediately''start' ACTIVITY;
+xorJoinInAndJoin  : 'After' act_fragment 'ends' ('and' act_fragment 'ends')+ ',''immediately''start' ACTIVITY;
 
-sequenceEndActivityExpression
-    : 'After ' activity ' ends';
-andEndActivityExpression
-    : 'After ' (activity | orSubProcessId) ' ends and ' ((activity | orSubProcessId) ' ends and ')*? (activity | orSubProcessId) ' ends';
-orEndActivityExpression
-    : 'After either ' (activity | andSubProcessId) ' ends or ' ((activity | andSubProcessId) ' ends or ')*? (activity | andSubProcessId) ' ends';
+subprocess: andSubprocess | orSubprocess;
+andSubprocess : SUBPROCESS_ID ':' ACTIVITY ('and' ACTIVITY)+;
+orSubprocess : SUBPROCESS_ID ':' ACTIVITY ('or' ACTIVITY)+;
 
-activity
-    : '"' WORD (SPACE WORD)*? '"' ;
-andSubProcessId
-    : '(' WORD (SPACE WORD)*? ')' ;
-orSubProcessId
-    : '(' WORD (SPACE WORD)*? ')' ;
-WORD
-    : [a-zA-Z0-9]+ ;
-SPACE
-    : '_' ;
-NEWLINE
-    : '\r'? '\n' ;"""
+act_fragment : ACTIVITY | SUBPROCESS_ID;
+ACTIVITY : '"' WORD (' ' WORD)* '"';
+SUBPROCESS_ID: '(' WORD+ ')' ;
+
+WORD : ([a-z] | [A-Z] | [0-9] | '_')+;
+SPACE : (' ' | '\t' | '.') -> skip;
+NEWLINE : ('\r'? '\n' | '\r') -> skip;
+"""
     
 In addition to the grammar, follow these numbered semantics rules:
 1. In the activity names include only the verb representing the action and the object targeted by the action, without the subject who performed the action. Allow only for alphanumeric characters and underscores.
