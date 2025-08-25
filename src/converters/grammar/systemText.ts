@@ -61,7 +61,7 @@ In addition to the grammar, follow these numbered semantics rules:
 1. In the activity names include only the verb representing the action and the object targeted by the action, without the subject who performed the action. Allow only for alphanumeric characters and underscores.
 2. Each activity must start exactly once and must end exactly one.
 3. Any "andSubProcess" or "orSubProcess" must de declared before it is used.
-4. Only start an "orSubProcess" or start an "orSubProcess" when there is at least one other activity to be started.
+4. Only start an "orSubProcess" or start an "andSubProcess" when there is at least one other activity to be started.
 5. Use "immediately repeat since" only when you need to go back and start again an activity that has ended previously.
 
 Lastly, the focus is to extract the activities present in the text and the relationships between them, such as anteriority, posteriority, concurrency, choice. Provide your output in text which follows the grammar.
