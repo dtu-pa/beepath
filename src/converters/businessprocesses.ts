@@ -94,7 +94,7 @@ export async function getNlTextConvertedToDialect(nlText: string): Promise<any> 
 	});
 
 	const result = await generateObject({
-		model: openai(localStorage.getItem("chatgpt-model") || 'gpt-4o', {
+		model: openai(localStorage.getItem("chatgpt-model") || 'gpt-5-mini', {
 			structuredOutputs: true,
 		}),
 		schemaName: "dialect",

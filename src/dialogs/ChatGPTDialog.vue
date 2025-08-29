@@ -4,7 +4,7 @@
 			<v-card-text>
 				<v-textarea label="Enter your API Key" v-model="token" outlined></v-textarea>
 				<v-select v-model="model" label="GPT Model"
-					:items="['gpt-4o', 'gpt-4o-mini', 'gpt-4o-2024-08-06', 'gpt-4o-mini-2024-07-18']"></v-select>
+					:items="['gpt-5', 'gpt-5-mini', 'gpt-5-nano']"></v-select>
 			</v-card-text>
 			<v-divider></v-divider>
 			<v-card-actions>
@@ -22,7 +22,7 @@ import { ref, defineModel } from "vue";
 
 const visible = defineModel();
 const token = ref(localStorage.getItem("chatgpt-token") || "");
-const model = ref(localStorage.getItem("chatgpt-model") || "gpt-4o");
+const model = ref(localStorage.getItem("chatgpt-model") || "gpt-5-mini");
 
 const closeDialog = () => {
 	visible.value = false;
