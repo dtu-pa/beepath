@@ -97,6 +97,7 @@ export async function getNlTextConvertedToDialect(nlText: string): Promise<any> 
 		model: openai(localStorage.getItem("chatgpt-model") || 'gpt-5-mini', {
 			structuredOutputs: true,
 		}),
+		temperature: 1,
 		schemaName: "dialect",
 		schemaDescription: "Representation of a text in the dialect described by the grammar",
 		schema: mySchema,
