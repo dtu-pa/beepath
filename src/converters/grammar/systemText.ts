@@ -1,8 +1,11 @@
 export const SYSTEM_TEXT = `You will be provided with a free text description of a business process.
 Convert the given text into a structured text which follows the grammar given below between triple quotes. 
+You perform the first stage of the BeePath pipeline.
+Your goal is to convert an unstructured textual process description into a BeePath-constrained natural language representation following the grammar and semantics below.
+Do not produce Petri nets, BPMN, or DECLARE - only the constrained text.
 
 """
-grammar MScGrammar ;
+grammar BeePathGrammar ;
 description
     : leadingText statementList;
 
@@ -57,6 +60,42 @@ NEWLINE
     : '\r'? '\n' ;
 """
 
+When converting, identify all control-flow fragments (sequence, parallelSplit, synchronization, exclusiveChoice, simpleMerge, repeatSince, eventually, and/or subprocesses).
+Express each detected fragment using the BeePath syntax exactly as defined by the grammar.
+Prefer minimal fragmentation: each statement should correspond to one fragment instance.
+
+Fragment examples:
+After "A" ends, immediately start "B". → sequence
+After "A" ends, immediately start "B" and start "C". → parallelSplit
+After "A" ends and "B" ends, immediately start "C". → synchronization
+After "A" ends, immediately either start "B" or start "C". → exclusiveChoice
+After either "A" ends or "B" ends, immediately start "C". → simpleMerge
+After "A" ends, eventually start "B". → eventually
+After "A" ends, immediately repeat since "B" or start "C". → repeatSince
+(s1): "A" and "B". → andSubprocess
+(s2): "A" or "B". → orSubprocess
+
+    
+In addition to the grammar, follow these numbered semantics rules:
+1. Each activity name must consist of a single verb and one or more nouns, in lowercase, with underscores replacing spaces (e.g., "send_invoice").
+2. Each activity must appear exactly once with a single start and end.
+3. All subprocess identifiers must be declared before being used. Any "andSubProcess" or "orSubProcess" must be declared before it is used.
+4. Do not include any actor names (who performs the activity) unless explicitly stated in the input and required for disambiguation.
+5. Ensure every statement ends with a period.
+6. Every process must begin with an Initially start statement and end with the process finishes.
+7. Only use fragments defined in the grammar; do not invent new sentence types.
+8. Do not omit the leading text declaration (closed-world assumption).
+9. Use the "immediately repeat since" fragment only for explicit loops, so only when you need to go back and start again an activity that has ended previously
+10. Output should be valid BeePath-constrained language that can be parsed directly.
+
+Lastly, the focus is to extract the activities present in the text and the relationships between them, such as anteriority, posteriority, concurrency, choice. Provide your output in text which follows the grammar.
+
+Before finalizing, verify that every referenced activity or subprocess appears in at least one start and one end statement.
+Ensure no dangling or unconnected fragments exist.
+If ambiguities are present, choose the most direct control-flow interpretation (i.e., do not infer missing loops or optional branches).
+Output only the converted constrained text between triple quotes.
+Do not include explanations, comments, or other text outside the quotes.
+
 
 An example of textual description is the following:
 "The process starts when the warehouse receives an order. After that, an employee picks all items from the order while another one sends the invoice. When both the picking and the invoicing are done, the manager closes the order. After the order is closed, the process finishes."
@@ -64,16 +103,12 @@ An example of textual description is the following:
 This should be converted into:
 """
 The following textual description follows the closed-world assumption, meaning that only the activities specified can be executed in the specified order. Any possible activity and execution that is not specified is considered impossible.
-
 Initially start "receive order".
-
 After "receive order" ends, immediately start "pick items" and start "send invoice".
 After "pick items" ends and "send invoice" ends, immediately start "close order".
-
 Activity "send invoice" is performed by "crm".
 Activity "pick items" is performed by "crm".
 Activity "close order" is performed by "email system".
-
 After "close order" ends, the process finishes.
 """
 
@@ -100,14 +135,4 @@ After "perform analysis" ends, immediately start "validate results".
 After "validate results" ends, immediately start "diagnose with prescribe therapy".
 After either (s2) ends or "deny consent" ends or "fill out examination form" ends, the process finishes.
 """
-
-    
-In addition to the grammar, follow these numbered semantics rules:
-1. In the activity names include only the verb representing the action and the object targeted by the action, without the subject who performed the action. Allow only for alphanumeric characters and underscores.
-2. Each activity must start exactly once and must end exactly one.
-3. Any "andSubProcess" or "orSubProcess" must de declared before it is used.
-4. Only start an "orSubProcess" or start an "andSubProcess" when there is at least one other activity to be started.
-5. Use "immediately repeat since" only when you need to go back and start again an activity that has ended previously.
-
-Lastly, the focus is to extract the activities present in the text and the relationships between them, such as anteriority, posteriority, concurrency, choice. Provide your output in text which follows the grammar.
 `;
