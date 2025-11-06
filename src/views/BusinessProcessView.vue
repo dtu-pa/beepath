@@ -23,8 +23,17 @@
 					text="Configure the ChatGPT API Token and reload the page in order to use the system." type="error"
 					variant="tonal" class="mb-3"></v-alert>
 				<v-container class="d-flex flex-column" style="height: 100%;">
+					<v-select
+						label="Select an example description"
+						:items="examples"
+						item-title="name"
+						item-value="description"
+						v-model="textualDescription"
+						class="mb-2 flex-grow-0"
+						clearable
+					></v-select>
 					<p class="mb-2">Natural language description of the process:</p>
-					<v-textarea v-model="textualDescription" class="flex-grow-1"></v-textarea>
+					<v-textarea v-model="textualDescription" auto-grow></v-textarea>
 					<v-btn class="align-self-end" color="primary" @click="processNaturalLanguage">
 						Convert to Restricted language
 						<v-icon class="ml-1" icon="mdi-arrow-right" />
@@ -85,7 +94,7 @@ export default {
 	},
 	data: () => ({
 		tab: null,
-		textualDescription: 'The process starts when the warehouse receives an order. \nAfter that, an employee picks all items from the order while another one sends the invoice. \nWhen both the picking and the invoicing are done, the manager closes the order.\nAfter the order is closed, the process finishes.',
+		textualDescription: '',
 		restrictedLanguage: 'The following textual description follows the closed-world assumption, meaning that only the activities specified can be executed in the specified order. Any possible activity and execution that is not specified is considered impossible.\n\nInitially start \"receive order\".\n\nAfter \"receive order\" ends, immediately start \"pick items\" and start \"send invoice\".\nAfter \"pick items\" ends and \"send invoice\" ends, immediately start \"close order\".\n\nActivity \"send invoice\" is performed by \"crm\".\nActivity \"pick items\" is performed by \"crm\".\nActivity \"close order\" is performed by \"email system\".\n\nAfter \"close order\" ends, the process finishes.',
 		petriNetTpn: '',
 		declare: '',
@@ -94,7 +103,14 @@ export default {
 		bpmn_xml: '',
 		loading: false,
 		syntaxErrors: [],
-		isTokenConfigured: localStorage.getItem("chatgpt-token")
+		isTokenConfigured: localStorage.getItem("chatgpt-token"),
+		examples: [
+			{ name: "Bike Rent", description: "The process starts when a customer wants to rent a bike, this is requested online through their website. In the first step, the customer will write an email asking if there are any bikes available at that time. Swapfiets online customer service will receive the email and contact the Swapfiets store employees, those are the ones who check the availability of the bikes. If no bikes are available, Swapfiets online customer service will notify the customer, and the service will not be supported.\nOtherwise, if bikes are available, the customer must fill in all the required information and pay the first fee while the Swapfiets store employees prepare the bike. Once they have completed everything, they can get the bike from the shop and the contract will be started.\nIn case something is wrong, maintenance will be requested, and it will be the Swapfiets store employees who will fix or swap the bike. The customer will proceed to take the bike to the nearest Swapfiets store or also, the staff will pick up the bike at the customer's place, so that the store employees can check that it is something wrong. The bike will be analyzed, and depending on the damage, it will be swapped for another one, or fixed.\nOnce the bike is ready to be used, the customer will pick it up at the store and start using it again. The maintenance process can be performed as many times as the bike requires. Once the customer wants to terminate the contract, provided that at least two months have passed since the beginning of the contract, he must send a warning message to Swapfiets employees saying that he wants to terminate the contract. The customer must take the bike to the shop, and the employees will check it and if everything is correct, they will register it as available and ready for a new rental contract."},
+			{ name: "Computer repair shop", description: "The workflow of a computer repair service (CRS) can be described as follows. A customer brings in a defective computer and the CRS checks the defect and hands out a repair cost calculation back. If the customer decides that the costs are acceptable, the process continues, otherwise she takes her computer home unrepaired. The ongoing repair consists of two activities, which are executed, in an arbitrary order. The first activity is to check and repair the hardware, whereas the second activity checks and configures the software. After each of these activities, the proper system functionality is tested. If an error is detected another arbitrary repair activity is executed, otherwise the repair is finished."},
+			{ name: "Expense report", description: "When an employee creates an expense report the money must be paid out within one week. After creating the expense report a manager should approve the expense report. if a manager approves the expense report the money can be paid out by finance. If the case is awaiting manager approval payout cannot happen. If the manager rejects the expense report he must later approve the expense report in order to payout to happen. The employee can redraw the expense report. Doing so will close the case. Once payout has been done the case is closed."},
+			{ name: "Quality control", description: "The process starts when the storage facility used by Puori sends a product sample to Ellipse. Ellipse then notifies Puori of the new sample. Before testing can begin, Puori then request a test of a sample through Ellipse. Ellipse must then test the product, as well as have additional testing done through Eurofarms. When all testing is done, results will be compiled into a report before sending the report to Puori for approval. This enables Puori to evaluate the results. If the results are different than expected, Puori may ask Ellipse for re-testing. If the results of the re-testing do not live up to Puoris standards, the batch will be discarded. If the results are sound Ellipse must send the results to Clean Label, who must then publish the results. Puori then checks whether all is in order and either approves of the publication, or compiles a list of possible errors. If errors are found, Clean Label must correct the errors before publishing the results again."},
+			{ name: "Order fulfillment", description: "The process starts when the warehouse receives an order. After that, an employee picks all items from the order while another one sends the invoice. When both the picking and the invoicing are done, the manager closes the order. After the order is closed, the process finishes."},
+		]
 	}),
 	methods: {
 		processNaturalLanguage() {
