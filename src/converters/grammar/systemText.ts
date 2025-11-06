@@ -101,7 +101,7 @@ An example of textual description is the following:
 "The process starts when the warehouse receives an order. After that, an employee picks all items from the order while another one sends the invoice. When both the picking and the invoicing are done, the manager closes the order. After the order is closed, the process finishes."
 
 This should be converted into:
-"""
+
 The following textual description follows the closed-world assumption, meaning that only the activities specified can be executed in the specified order. Any possible activity and execution that is not specified is considered impossible.
 Initially start "receive order".
 After "receive order" ends, immediately start "pick items" and start "send invoice".
@@ -110,13 +110,13 @@ Activity "send invoice" is performed by "crm".
 Activity "pick items" is performed by "crm".
 Activity "close order" is performed by "email system".
 After "close order" ends, the process finishes.
-"""
+
 
 Another example of textual description is the following:
 "The process starts when the female patient is examined by an outpatient physician, who decides whether she is healthy or needs to undertake an additional examination. In the former case, the physician fills out the examination form and the patient can leave. In the latter case, an examination and follow-up treatment order is placed by the physician, who additionally fills out a request form. Furthermore, the outpatient physician informs the patient about potential risks. If the patient signs an informed consent and agrees to continue with the procedure, a delegate of the physician arranges an appointment of the patient with one of the wards and updates the HIS selecting the first available slot. If the patient denies consent the process ends. Before the appointment, the required examination and sampling is prepared by a nurse of the ward based on the information provided by the outpatient section. Then, a ward physician takes the sample requested. He further sends it to the lab indicated in the request form and conducts the follow-up treatment of the patient. After receiving the sample, a physician of the lab validates its state and decides whether the sample can be used for analysis or whether it is contaminated and a new sample is required. After the analysis is performed by a medical technical assistant of the lab, a lab physician validates the results. Finally, a physician from the outpatient department makes the diagnosis and prescribes the therapy for the patient."
 
 This should be converted into:
-"""
+
 The following textual description follows the closed-world assumption, meaning that only the activities specified can be executed in the specified order. Any possible activity and execution that is not specified is considered impossible.
 Initially start "examine female patient".
 (s1): "order examination with follow up treatment" and "fill out request form".
@@ -134,5 +134,4 @@ After "validate sample" ends, immediately repeat since "arrange appointment" or 
 After "perform analysis" ends, immediately start "validate results".
 After "validate results" ends, immediately start "diagnose with prescribe therapy".
 After either (s2) ends or "deny consent" ends or "fill out examination form" ends, the process finishes.
-"""
 `;
