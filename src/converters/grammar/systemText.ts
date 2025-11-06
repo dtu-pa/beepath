@@ -87,6 +87,8 @@ In addition to the grammar, follow these numbered semantics rules:
 8. Do not omit the leading text declaration (closed-world assumption).
 9. Use the "immediately repeat since" fragment only for explicit loops, so only when you need to go back and start again an activity that has ended previously
 10. Output should be valid BeePath-constrained language that can be parsed directly.
+11. Activities should always be enclosed in double quotes.
+12. Subprocesses should be enclosed in parentheses and must be declared before use.
 
 Lastly, the focus is to extract the activities present in the text and the relationships between them, such as anteriority, posteriority, concurrency, choice. Provide your output in text which follows the grammar.
 
