@@ -25,7 +25,7 @@
 			</v-container>
 		</v-tabs-window-item>
 		<v-tabs-window-item value="declare" class="flex-fill" style="">
-			<v-container class="d-flex flex-column flex-fill" style="height: 100%;">
+			<v-container class="d-flex flex-column flex-fill" style="height: 800px;">
 				<v-btn class="align-self-end" elevation="0" outlined @click="handleDownloadFile('DECLARE')">
 					<v-icon class="mr-2" icon="mdi-download" />
 					Download .decl

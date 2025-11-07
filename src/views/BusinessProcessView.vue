@@ -1,7 +1,7 @@
 <template>
 	<h1 class="mb-3">Modelling of Business Processes</h1>
 
-	<div class="d-flex flex-row flex-fill" style="height: 90%;">
+	<div class="d-flex flex-row flex-fill">
 		<v-tabs v-model="tab" class="mr-3" direction="vertical" bg-color="surface-light">
 			<v-tab :value="'nl'">
 				<v-icon class="mr-1" icon="mdi-chat-outline" />
@@ -17,24 +17,24 @@
 			</v-tab>
 		</v-tabs>
 
-		<v-tabs-window v-model="tab" class="flex-fill" style="height: 100%;">
-			<v-tabs-window-item value="nl" class="flex-fill">
+		<v-tabs-window v-model="tab" class="w-100">
+			<v-tabs-window-item value="nl" class="">
 				<v-alert v-if="!isTokenConfigured" closable
 					text="Configure the ChatGPT API Token and reload the page in order to use the system." type="error"
 					variant="tonal" class="mb-3"></v-alert>
-				<v-container class="d-flex flex-column" style="height: 100%;">
+				<v-container>
 					<v-select
 						label="Select an example description"
 						:items="examples"
 						item-title="name"
 						item-value="description"
 						v-model="textualDescription"
-						class="mb-2 flex-grow-0"
+						class="mb-2"
 						clearable
 					></v-select>
 					<p class="mb-2">Natural language description of the process:</p>
-					<v-textarea v-model="textualDescription" auto-grow></v-textarea>
-					<v-btn class="align-self-end" color="primary" @click="processNaturalLanguage">
+					<v-textarea v-model="textualDescription" auto-grow rows="10"></v-textarea>
+					<v-btn class="float-right" color="primary" @click="processNaturalLanguage">
 						Convert to Restricted language
 						<v-icon class="ml-1" icon="mdi-arrow-right" />
 					</v-btn>
@@ -42,15 +42,21 @@
 			</v-tabs-window-item>
 
 			<v-tabs-window-item value="restricted" class="flex-fill">
-				<v-container class="d-flex flex-column" style="height: 100%;">
+				<v-container>
 					<p class="mb-2">Restricted natural language:</p>
-					<prism-editor class="editor flex-grow-1 line-numbers" v-model="restrictedLanguage"
-						:highlight="highlighter" :line-numbers="false"></prism-editor>
-					<div v-if="syntaxErrors.length > 0">
-						<p class="text-h6">Syntax Error</p>
+						<RestrictedLanguageVisualizer
+						v-model="restrictedLanguage"
+					></RestrictedLanguageVisualizer>
+					<v-alert v-if="syntaxErrors.length > 0"
+						border="top"
+      					type="error"
+      					variant="outlined"
+						class="mb-3"
+						title="Syntax Error"
+						>
 						<pre v-html="syntaxErrors.join('\n')"></pre>
-					</div>
-					<v-btn class="align-self-end" color="primary" @click="processRestrictedNaturalLanguage">
+					</v-alert>
+					<v-btn class="float-right" color="primary" @click="processRestrictedNaturalLanguage">
 						Convert to model
 						<v-icon class="ml-1" icon="mdi-arrow-right" />
 					</v-btn>
@@ -76,21 +82,14 @@
 
 <script>
 import ProcessVisualizer from '../components/ProcessVisualizer.vue'
-
-import { PrismEditor } from "vue-prism-editor";
-import { highlight, languages } from "prismjs/components/prism-core";
-import 'prismjs/plugins/line-numbers/prism-line-numbers.js'
-import 'prismjs/plugins/line-numbers/prism-line-numbers.css'
-import "vue-prism-editor/dist/prismeditor.min.css";
-import "../highlights/prism-vs.css";
-import "../highlights/businessprocess.js";
+import RestrictedLanguageVisualizer from '../components/RestrictedLanguageVisualizer.vue';
 
 import { getNlTextConvertedToDialect, getConvertedText, checkSyntax } from '../converters/businessprocesses';
 
 export default {
 	name: 'BusinessProcess',
 	components: {
-		ProcessVisualizer, PrismEditor
+		ProcessVisualizer, RestrictedLanguageVisualizer
 	},
 	data: () => ({
 		tab: null,
@@ -157,24 +156,4 @@ export default {
 	}
 }
 </script>
-
-<style>
-.editor {
-	background: #f6f6f6;
-	font-family: Roboto, sans-serif;
-	font-size: 16px;
-	line-height: 1.5;
-	padding: 16px;
-	margin-bottom: 20px;
-	border-bottom: 1px solid #A5A5A5;
-}
-
-.prism-editor__textarea:focus {
-	outline: none;
-}
-
-.prism-editor__line-number {
-	font-style: normal !important;
-	color: #23799373 !important;
-}
-</style>
+<
