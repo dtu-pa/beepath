@@ -1,5 +1,5 @@
 <template>
-	<v-dialog v-model="visible" max-width="600">
+	<v-dialog v-model="visible" max-width="600" @keydown.esc="closeDialog" @keydown.enter="addRule">
 		<v-card prepend-icon="mdi-file-edit-outline" title="Add Process Rule">
 			<v-card-text>
 				<TemplateBuilder
