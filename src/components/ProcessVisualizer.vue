@@ -1,12 +1,12 @@
 <template>
 	<v-tabs v-model="tab" @update:modelValue="onTabChange">
-		<v-tab value="bpmn">BPMN</v-tab>
-		<v-tab value="petri">Petri net</v-tab>
-		<v-tab value="declare">Declare</v-tab>
+		<v-tab value="bpmn" v-if="bpmn_img !== ''">BPMN</v-tab>
+		<v-tab value="petri" v-if="petrinet_img !== ''">Petri net</v-tab>
+		<v-tab value="declare" v-if="declare">Declare</v-tab>
 	</v-tabs>
 
 	<v-tabs-window v-model="tab" class="flex-fill" style="height: 100%;">
-		<v-tabs-window-item value="petri" class="flex-fill">
+		<v-tabs-window-item value="petri" class="flex-fill" v-if="petrinet_img !== ''">
 			<v-container class="d-flex flex-column" style="height: 100%;">
 				<v-btn class="align-self-end" elevation="0" outlined @click="handleDownloadFile('PETRI_NET')">
 					<v-icon class="mr-2" icon="mdi-download" />
@@ -15,7 +15,7 @@
 				<div class="flex-grow-1 img-container mt-3" v-html="petrinet_img"></div>
 			</v-container>
 		</v-tabs-window-item>
-		<v-tabs-window-item value="bpmn" class="flex-fill">
+		<v-tabs-window-item value="bpmn" class="flex-fill" v-if="bpmn_img !== ''">
 			<v-container class="d-flex flex-column" style="height: 100%;">
 				<v-btn class="align-self-end" elevation="0" outlined @click="handleDownloadFile('BPMN')">
 					<v-icon class="mr-2" icon="mdi-download" />
@@ -24,7 +24,7 @@
 				<div class="flex-grow-1 img-container mt-3" v-html="bpmn_img"></div>
 			</v-container>
 		</v-tabs-window-item>
-		<v-tabs-window-item value="declare" class="flex-fill" style="">
+		<v-tabs-window-item value="declare" class="flex-fill" style="" v-if="declare">
 			<v-container class="d-flex flex-column flex-fill" style="height: 800px;">
 				<v-btn class="align-self-end" elevation="0" outlined @click="handleDownloadFile('DECLARE')">
 					<v-icon class="mr-2" icon="mdi-download" />
@@ -66,7 +66,7 @@ export default {
 		}
 	},
 	data: () => ({
-		tab: null,
+		tab: 'bpmn',
 		petrinet_graphviz: '',
 		petrinet_img: '',
 		declare_img: '',
@@ -124,7 +124,7 @@ export default {
 			window.URL.revokeObjectURL(url);
 		},
 		onTabChange() {
-			if (this.tab === 'declare') {
+			if (this.tab === 'declare' && this.declare_js) {
 				setTimeout(() => {
 					new DeclareContainer(this.declare_js);
 				}, 100);

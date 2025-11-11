@@ -3,6 +3,9 @@
 
 	<div class="d-flex flex-row flex-fill">
 		<v-tabs v-model="tab" class="mr-3" direction="vertical" bg-color="surface-light">
+			<v-tab disabled class="header">
+				Wizard
+			</v-tab>
 			<v-tab :value="'nl'">
 				<v-icon class="mr-1" icon="mdi-chat-outline" />
 				1. Natural Language
@@ -14,6 +17,13 @@
 			<v-tab :value="'model'">
 				<v-icon class="mr-1" icon="mdi-chart-sankey-variant" />
 				3. Model
+			</v-tab>
+			<v-tab disabled class="header">
+				Modeler
+			</v-tab>
+			<v-tab :value="'modeler'">
+				<v-icon class="mr-1" icon="mdi-file-edit-outline" />
+				Modeler
 			</v-tab>
 		</v-tabs>
 
@@ -73,6 +83,48 @@
 						:bpmn_xml="bpmn_xml" />
 				</v-container>
 			</v-tabs-window-item>
+
+			<v-tabs-window-item value="modeler" class="flex-fill">
+				<v-container>
+					<v-card class="mb-10" elevation="5" variant="tonal">
+						<template v-slot:title>
+							<span>Restricted Natural Language</span>
+							<v-btn
+								prepend-icon="mdi-file-edit-outline"
+								class="float-right"
+								variant="tonal"
+								@click="this.addRuleDialogVisible = true"
+							>Add rule</v-btn>
+						</template>
+						<RestrictedLanguageVisualizer
+							v-model="modelerRestrictedLanguage"
+							style="border: 0;"
+						></RestrictedLanguageVisualizer>
+						<v-alert v-if="modelerSyntaxErrors.length > 0"
+							border="top"
+							type="error"
+							variant="outlined"
+							class="mb-3 ml-3 mr-3"
+							title="Syntax Error"
+							>
+							<pre v-html="modelerSyntaxErrors.join('\n')"></pre>
+						</v-alert>
+						<AddProcessRuleDialog
+							v-model="addRuleDialogVisible"
+							@newRule="(e) => addNewRuleToModeler(e)"
+						></AddProcessRuleDialog>
+					</v-card>
+					
+					<v-card title="Process Model" elevation="5">
+						<ProcessVisualizer
+							:petrinet="modelerPetriNetTpn" 
+							:declare="modelerDeclare" 
+							:declare_js = "modelerDeclare_js"
+							:bpmn="modelerBpmn"
+							:bpmn_xml="modelerBpmnXml" />
+					</v-card>
+				</v-container>
+			</v-tabs-window-item>
 		</v-tabs-window>
 	</div>
 	<v-overlay :model-value="loading" persistent class="align-center justify-center">
@@ -81,6 +133,7 @@
 </template>
 
 <script>
+import AddProcessRuleDialog from '../dialogs/AddProcessRuleDialog.vue';
 import ProcessVisualizer from '../components/ProcessVisualizer.vue'
 import RestrictedLanguageVisualizer from '../components/RestrictedLanguageVisualizer.vue';
 
@@ -89,10 +142,13 @@ import { getNlTextConvertedToDialect, getConvertedText, checkSyntax } from '../c
 export default {
 	name: 'BusinessProcess',
 	components: {
-		ProcessVisualizer, RestrictedLanguageVisualizer
+		ProcessVisualizer, RestrictedLanguageVisualizer, AddProcessRuleDialog
 	},
 	data: () => ({
 		tab: null,
+		addRuleDialogVisible: false,
+
+		// wizards data
 		textualDescription: '',
 		restrictedLanguage: 'The following textual description follows the closed-world assumption, meaning that only the activities specified can be executed in the specified order. Any possible activity and execution that is not specified is considered impossible.\n\nInitially start \"receive order\".\n\nAfter \"receive order\" ends, immediately start \"pick items\" and start \"send invoice\".\nAfter \"pick items\" ends and \"send invoice\" ends, immediately start \"close order\".\n\nActivity \"send invoice\" is performed by \"crm\".\nActivity \"pick items\" is performed by \"crm\".\nActivity \"close order\" is performed by \"email system\".\n\nAfter \"close order\" ends, the process finishes.',
 		petriNetTpn: '',
@@ -109,7 +165,16 @@ export default {
 			{ name: "Expense report", description: "When an employee creates an expense report the money must be paid out within one week.\n\nAfter creating the expense report a manager should approve the expense report. If a manager approves the expense report the money can be paid out by finance. If the case is awaiting manager approval payout cannot happen. If the manager rejects the expense report he must later approve the expense report in order to payout to happen. The employee can redraw the expense report. Doing so will close the case.\n\nOnce payout has been done the case is closed."},
 			{ name: "Quality control", description: "The process starts when the storage facility used by Puori sends a product sample to Ellipse.\n\nEllipse then notifies Puori of the new sample. Before testing can begin, Puori then request a test of a sample through Ellipse. Ellipse must then test the product, as well as have additional testing done through Eurofarms.\n\nWhen all testing is done, results will be compiled into a report before sending the report to Puori for approval. This enables Puori to evaluate the results. If the results are different than expected, Puori may ask Ellipse for re-testing. If the results of the re-testing do not live up to Puoris standards, the batch will be discarded. If the results are sound Ellipse must send the results to Clean Label, who must then publish the results.\n\nPuori then checks whether all is in order and either approves of the publication, or compiles a list of possible errors. If errors are found, Clean Label must correct the errors before publishing the results again."},
 			{ name: "Order fulfillment", description: "The process starts when the warehouse receives an order. After that, an employee picks all items from the order while another one sends the invoice.\n\nWhen both the picking and the invoicing are done, the manager closes the order.\n\nAfter the order is closed, the process finishes."},
-		]
+		],
+
+		// modeler data
+		modelerRestrictedLanguage: 'The following textual description follows the closed-world assumption, meaning that only the activities specified can be executed in the specified order. Any possible activity and execution that is not specified is considered impossible.\n\n',
+		modelerBpmn: '',
+		modelerBpmnXml: '',
+		modelerPetriNetTpn: '',
+		modelerDeclare: '',
+		modelerDeclare_js: '',
+		modelerSyntaxErrors: [],
 	}),
 	methods: {
 		processNaturalLanguage() {
@@ -153,7 +218,42 @@ export default {
 			}
 			return true;
 		},
+		addNewRuleToModeler(newRule) {
+			this.modelerRestrictedLanguage += '\n' + newRule;
+			// check if the new rule is an initial rule
+			if (newRule.startsWith('Initially start')) {
+				
+			} else if (newRule.endsWith('the process finishes.')) { // check if the new rule is a final rule
+
+			}
+		}
+	},
+	watch: {
+		modelerRestrictedLanguage(newValue) {
+			this.modelerSyntaxErrors = [];
+			let result = checkSyntax(newValue);
+			if (!result.state) {
+				this.modelerSyntaxErrors = result.errors;
+				return;
+			}
+			
+			this.loading = true;
+			getConvertedText(newValue).then(response => {
+				this.modelerPetriNetTpn = response[0][0];
+				this.modelerDeclare = response[1][0];
+				this.modelerDeclare_js = response[1][1];
+				this.modelerBpmn = response[2][0];
+				this.modelerBpmnXml = response[2][1];
+				this.loading = false;
+			});
+		}	
 	}
 }
 </script>
-<
+<style>
+.header {
+	background-color: rgb(var(--v-theme-primary));
+	color: white;
+	opacity: 0.5;
+}
+</style>
