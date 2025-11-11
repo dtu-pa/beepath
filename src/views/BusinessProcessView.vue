@@ -219,12 +219,47 @@ export default {
 			return true;
 		},
 		addNewRuleToModeler(newRule) {
-			this.modelerRestrictedLanguage += '\n' + newRule;
-			// check if the new rule is an initial rule
 			if (newRule.startsWith('Initially start')) {
-				
-			} else if (newRule.endsWith('the process finishes.')) { // check if the new rule is a final rule
-
+				// initial rule
+				let edited = false;
+				for (let i = 0; i < this.modelerRestrictedLanguage.split('\n').length; i++) {
+					if (this.modelerRestrictedLanguage.split('\n')[i].startsWith('Initially start')) {
+						let lines = this.modelerRestrictedLanguage.split('\n');
+						lines[i] = newRule;
+						this.modelerRestrictedLanguage = lines.join('\n');
+						edited = true;
+						break;
+					}
+				}
+				if (!edited) {
+					this.modelerRestrictedLanguage += '\n' + newRule;
+				}
+			} else if (newRule.endsWith('the process finishes.')) {
+				// check if the new rule is a final rule
+				let edited = false;
+				for (let i = 0; i < this.modelerRestrictedLanguage.split('\n').length; i++) {
+					if (this.modelerRestrictedLanguage.split('\n')[i].endsWith('the process finishes.')) {
+						let lines = this.modelerRestrictedLanguage.split('\n');
+						lines[i] = newRule;
+						this.modelerRestrictedLanguage = lines.join('\n');
+						edited = true;
+						break;
+					}
+				}
+				if (!edited) {
+					this.modelerRestrictedLanguage += '\n' + newRule;
+				}
+			} else {
+				// other rules
+				// add the new rule just before the final rule
+				let lines = this.modelerRestrictedLanguage.split('\n');
+				let finalRuleIndex = lines.findIndex(line => line.endsWith('the process finishes.'));
+				if (finalRuleIndex !== -1) {
+					lines.splice(finalRuleIndex, 0, newRule);
+				} else {
+					lines.push(newRule);
+				}
+				this.modelerRestrictedLanguage = lines.join('\n');
 			}
 		}
 	},
