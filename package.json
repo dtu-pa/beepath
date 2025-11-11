@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+	"postbuild": "cp dist/index.html dist/404.html",
     "preview": "vite preview",
     "antlr4ts": "antlr4ts src/converters/grammar/MScGrammar.g4 -o src/converters/grammar/generated/"
   },
