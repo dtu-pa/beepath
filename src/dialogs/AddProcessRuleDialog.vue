@@ -68,83 +68,83 @@ const templates = [
 	},
 	{
 		id: 'seq',
-		label: 'Sequence(A, B)',
+		label: 'Sequence of two activities',
 		render: 'text',
 		escapeForRegex: true, // make user input safe in a regex
 		format: 'After "{{A}}" ends, immediately start "{{B}}".',
 		fields: [
-			{ key: 'A', label: 'Activity A', type: 'activity', required: true, placeholder: 'Activity name' },
-			{ key: 'B', label: 'Activity B', type: 'activity', required: true, placeholder: 'Activity name' },
+			{ key: 'A', label: 'Preceding activity', type: 'activity', required: true, placeholder: 'Activity name' },
+			{ key: 'B', label: 'Following activity', type: 'activity', required: true, placeholder: 'Activity name' },
 		]
 	},{
 		id: 'eventually',
-		label: 'Eventual sequence(A, B)',
+		label: 'Long term sequence of two activities',
 		render: 'text',
 		escapeForRegex: true, // make user input safe in a regex
 		format: 'After "{{A}}" ends, eventually start "{{B}}".',
 		fields: [
-			{ key: 'A', label: 'Activity A', type: 'activity', required: true, placeholder: 'Activity name' },
-			{ key: 'B', label: 'Activity B', type: 'activity', required: true, placeholder: 'Activity name' },
+			{ key: 'A', label: 'Preceding activity', type: 'activity', required: true, placeholder: 'Activity name' },
+			{ key: 'B', label: 'Following activity', type: 'activity', required: true, placeholder: 'Activity name' },
 		]
 	},
 	{
 		id: 'parallel',
-		label: 'Parallel Split(A, B, C)',
+		label: 'Parallel split of activities',
 		render: 'text',
 		escapeForRegex: true, // make user input safe in a regex
 		format: 'After "{{A}}" ends, immediately start "{{B}}" and start "{{C}}".',
 		fields: [
-			{ key: 'A', label: 'Activity A', type: 'activity', required: true, placeholder: 'Activity name' },
-			{ key: 'B', label: 'Activity B', type: 'activity', required: true, placeholder: 'Activity name' },
-			{ key: 'C', label: 'Activity C', type: 'activity', required: true, placeholder: 'Activity name' },
+			{ key: 'A', label: 'Activity before the split', type: 'activity', required: true, placeholder: 'Activity name' },
+			{ key: 'B', label: 'Activity in parallel 1', type: 'activity', required: true, placeholder: 'Activity name' },
+			{ key: 'C', label: 'Activity in parallel 2', type: 'activity', required: true, placeholder: 'Activity name' },
 		]
 	},
 	{
 		id: 'synch',
-		label: 'Synchronization(A, B, C)',
+		label: 'Merge of parallel activities',
 		render: 'text',
 		escapeForRegex: true, // make user input safe in a regex
 		format: 'After "{{A}}" ends and "{{B}}" ends, immediately start "{{C}}".',
 		fields: [
-			{ key: 'A', label: 'Activity A', type: 'activity', required: true, placeholder: 'Activity name' },
-			{ key: 'B', label: 'Activity B', type: 'activity', required: true, placeholder: 'Activity name' },
-			{ key: 'C', label: 'Activity C', type: 'activity', required: true, placeholder: 'Activity name' },
+			{ key: 'A', label: 'Activity in parallel 1', type: 'activity', required: true, placeholder: 'Activity name' },
+			{ key: 'B', label: 'Activity in parallel 2', type: 'activity', required: true, placeholder: 'Activity name' },
+			{ key: 'C', label: 'Activity after the merge', type: 'activity', required: true, placeholder: 'Activity name' },
 		]
 	},
 	{
 		id: 'ex-choice',
-		label: 'Exclusive Choice(A, B, C)',
+		label: 'Choice between activities',
 		render: 'text',
 		escapeForRegex: true, // make user input safe in a regex
 		format: 'After "{{A}}" ends, immediately either start "{{B}}" or start "{{C}}".',
 		fields: [
-			{ key: 'A', label: 'Activity A', type: 'activity', required: true, placeholder: 'Activity name' },
-			{ key: 'B', label: 'Activity B', type: 'activity', required: true, placeholder: 'Activity name' },
-			{ key: 'C', label: 'Activity C', type: 'activity', required: true, placeholder: 'Activity name' },
+			{ key: 'A', label: 'Activity before the split', type: 'activity', required: true, placeholder: 'Activity name' },
+			{ key: 'B', label: 'Activity option 1', type: 'activity', required: true, placeholder: 'Activity name' },
+			{ key: 'C', label: 'Activity option 2', type: 'activity', required: true, placeholder: 'Activity name' },
 		]
 	},
 	{
 		id: 'simple-merge',
-		label: 'Simple Merge(A, B, C)',
+		label: 'Merge of activities in choice',
 		render: 'text',
 		escapeForRegex: true, // make user input safe in a regex
 		format: 'After either "{{A}}" ends or "{{B}}" ends, immediately start "{{C}}".',
 		fields: [
-			{ key: 'A', label: 'Activity A', type: 'activity', required: true, placeholder: 'Activity name' },
-			{ key: 'B', label: 'Activity B', type: 'activity', required: true, placeholder: 'Activity name' },
-			{ key: 'C', label: 'Activity C', type: 'activity', required: true, placeholder: 'Activity name' },
+			{ key: 'A', label: 'Activity option 1', type: 'activity', required: true, placeholder: 'Activity name' },
+			{ key: 'B', label: 'Activity option 2', type: 'activity', required: true, placeholder: 'Activity name' },
+			{ key: 'C', label: 'Activity after the merge', type: 'activity', required: true, placeholder: 'Activity name' },
 		]
 	},
 	{
 		id: 'repeat-since',
-		label: 'Repeat Since(A, B, C)',
+		label: 'Repetition of activities',
 		render: 'text',
 		escapeForRegex: true, // make user input safe in a regex
 		format: 'After "{{A}}" ends, immediately repeat since "{{B}}" or start "{{C}}".',
 		fields: [
-			{ key: 'A', label: 'Activity A', type: 'activity', required: true, placeholder: 'Activity name' },
-			{ key: 'B', label: 'Activity B', type: 'activity', required: true, placeholder: 'Activity name' },
-			{ key: 'C', label: 'Activity C', type: 'activity', required: true, placeholder: 'Activity name' },
+			{ key: 'A', label: 'Activity after which the loop can start', type: 'activity', required: true, placeholder: 'Activity name' },
+			{ key: 'B', label: 'Entry point of the loop', type: 'activity', required: true, placeholder: 'Activity name' },
+			{ key: 'C', label: 'Activity after the loop', type: 'activity', required: true, placeholder: 'Activity name' },
 		]
 	},
 ];
