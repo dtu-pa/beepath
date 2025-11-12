@@ -13,7 +13,6 @@
 	  :items="templates.map(t => ({ text: t.label, value: t.id }))"
 	  item-title="text"
 	  item-value="value"
-	  
 	/>
 
     <!-- Optional description -->
@@ -63,6 +62,14 @@
             {{ opt.label }}
           </option>
         </select>
+		<v-combobox
+			v-else-if="f.type === 'activity'"
+			class=""
+			v-model="values[f.key]"
+			:items="props.activityNames"
+			item-title="text"
+			item-value="value"
+			/>
         <input
           v-else-if="f.type === 'checkbox'"
           class="tb__checkbox"
@@ -123,7 +130,7 @@ type FieldOption = { label: string; value: string | number | boolean }
 type Field = {
   key: string
   label: string
-  type?: 'text' | 'number' | 'select' | 'checkbox' | 'date'
+  type?: 'text' | 'number' | 'select' | 'checkbox' | 'date' | 'activity'
   placeholder?: string
   required?: boolean
   pattern?: string | RegExp // optional validation
@@ -143,6 +150,7 @@ type TemplateDef = {
 
 const props = defineProps<{
   templates: TemplateDef[]
+  activityNames: string[]
   modelValue?: string
   initialTemplateId?: string
 }>()

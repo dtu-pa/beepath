@@ -111,6 +111,7 @@
 						</v-alert>
 						<AddProcessRuleDialog
 							v-model="addRuleDialogVisible"
+							:activityNames="modelerActivityNames"
 							@newRule="(e) => addNewRuleToModeler(e)"
 						></AddProcessRuleDialog>
 					</v-card>
@@ -175,6 +176,7 @@ export default {
 		modelerDeclare: '',
 		modelerDeclare_js: '',
 		modelerSyntaxErrors: [],
+		modelerActivityNames: [],
 	}),
 	methods: {
 		processNaturalLanguage() {
@@ -265,13 +267,17 @@ export default {
 	},
 	watch: {
 		modelerRestrictedLanguage(newValue) {
+			// extract all activity names from the restricted language
+			const matches = newValue.match(/"([^"]*)"/g) || [];
+			this.modelerActivityNames = [...new Set(matches.map(s => s.slice(1, -1)))];
+
 			this.modelerSyntaxErrors = [];
 			let result = checkSyntax(newValue);
 			if (!result.state) {
 				this.modelerSyntaxErrors = result.errors;
 				return;
 			}
-			
+
 			this.loading = true;
 			getConvertedText(newValue).then(response => {
 				this.modelerPetriNetTpn = response[0][0];

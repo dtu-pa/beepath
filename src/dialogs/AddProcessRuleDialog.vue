@@ -4,6 +4,7 @@
 			<v-card-text>
 				<TemplateBuilder
 					v-model="output"
+					:activityNames="props.activityNames"
 					:templates="templates"
 				/>
 			</v-card-text>
@@ -20,13 +21,18 @@
 
 <script setup>
 import { ref, defineModel } from "vue";
-// import { computed, reactive, watch, ref } from 'vue'
 import TemplateBuilder from '../components/TemplateBuilder.vue';
 
 const emit = defineEmits(['newRule']);
 
 const visible = defineModel();
 const output = ref('');
+const props = defineProps({
+	activityNames: {
+		type: Array,
+		required: true
+	}
+});
 
 const templates = [
 	{
@@ -36,7 +42,7 @@ const templates = [
 		escapeForRegex: true, // make user input safe in a regex
 		format: 'Initially start "{{A}}".',
 		fields: [
-			{ key: 'A', label: 'First activity', type: 'text', required: true, placeholder: 'Activity name' },
+			{ key: 'A', label: 'First activity', type: 'activity', required: true, placeholder: 'Activity name' },
 		]
 	},
 	{
@@ -46,7 +52,7 @@ const templates = [
 		escapeForRegex: true, // make user input safe in a regex
 		format: 'After "{{A}}" ends, the process finishes.',
 		fields: [
-			{ key: 'A', label: 'Final activity', type: 'text', required: true, placeholder: 'Activity name' },
+			{ key: 'A', label: 'Final activity', type: 'activity', required: true, placeholder: 'Activity name' },
 		]
 	},
 	{
@@ -56,7 +62,7 @@ const templates = [
 		escapeForRegex: true, // make user input safe in a regex
 		format: 'Activity "{{A}}" is performed by "{{role}}".',
 		fields: [
-			{ key: 'A', label: 'Activity', type: 'text', required: true, placeholder: 'Activity name' },
+			{ key: 'A', label: 'Activity', type: 'activity', required: true, placeholder: 'Activity name' },
 			{ key: 'role', label: 'Role', type: 'text', required: true, placeholder: 'Role name' },
 		]
 	},
@@ -67,8 +73,8 @@ const templates = [
 		escapeForRegex: true, // make user input safe in a regex
 		format: 'After "{{A}}" ends, immediately start "{{B}}".',
 		fields: [
-			{ key: 'A', label: 'Activity A', type: 'text', required: true, placeholder: 'Activity name' },
-			{ key: 'B', label: 'Activity B', type: 'text', required: true, placeholder: 'Activity name' },
+			{ key: 'A', label: 'Activity A', type: 'activity', required: true, placeholder: 'Activity name' },
+			{ key: 'B', label: 'Activity B', type: 'activity', required: true, placeholder: 'Activity name' },
 		]
 	},{
 		id: 'eventually',
@@ -77,8 +83,8 @@ const templates = [
 		escapeForRegex: true, // make user input safe in a regex
 		format: 'After "{{A}}" ends, eventually start "{{B}}".',
 		fields: [
-			{ key: 'A', label: 'Activity A', type: 'text', required: true, placeholder: 'Activity name' },
-			{ key: 'B', label: 'Activity B', type: 'text', required: true, placeholder: 'Activity name' },
+			{ key: 'A', label: 'Activity A', type: 'activity', required: true, placeholder: 'Activity name' },
+			{ key: 'B', label: 'Activity B', type: 'activity', required: true, placeholder: 'Activity name' },
 		]
 	},
 	{
@@ -88,9 +94,9 @@ const templates = [
 		escapeForRegex: true, // make user input safe in a regex
 		format: 'After "{{A}}" ends, immediately start "{{B}}" and start "{{C}}".',
 		fields: [
-			{ key: 'A', label: 'Activity A', type: 'text', required: true, placeholder: 'Activity name' },
-			{ key: 'B', label: 'Activity B', type: 'text', required: true, placeholder: 'Activity name' },
-			{ key: 'C', label: 'Activity C', type: 'text', required: true, placeholder: 'Activity name' },
+			{ key: 'A', label: 'Activity A', type: 'activity', required: true, placeholder: 'Activity name' },
+			{ key: 'B', label: 'Activity B', type: 'activity', required: true, placeholder: 'Activity name' },
+			{ key: 'C', label: 'Activity C', type: 'activity', required: true, placeholder: 'Activity name' },
 		]
 	},
 	{
@@ -100,9 +106,9 @@ const templates = [
 		escapeForRegex: true, // make user input safe in a regex
 		format: 'After "{{A}}" ends and "{{B}}" ends, immediately start "{{C}}".',
 		fields: [
-			{ key: 'A', label: 'Activity A', type: 'text', required: true, placeholder: 'Activity name' },
-			{ key: 'B', label: 'Activity B', type: 'text', required: true, placeholder: 'Activity name' },
-			{ key: 'C', label: 'Activity C', type: 'text', required: true, placeholder: 'Activity name' },
+			{ key: 'A', label: 'Activity A', type: 'activity', required: true, placeholder: 'Activity name' },
+			{ key: 'B', label: 'Activity B', type: 'activity', required: true, placeholder: 'Activity name' },
+			{ key: 'C', label: 'Activity C', type: 'activity', required: true, placeholder: 'Activity name' },
 		]
 	},
 	{
@@ -112,9 +118,9 @@ const templates = [
 		escapeForRegex: true, // make user input safe in a regex
 		format: 'After "{{A}}" ends, immediately either start "{{B}}" or start "{{C}}".',
 		fields: [
-			{ key: 'A', label: 'Activity A', type: 'text', required: true, placeholder: 'Activity name' },
-			{ key: 'B', label: 'Activity B', type: 'text', required: true, placeholder: 'Activity name' },
-			{ key: 'C', label: 'Activity C', type: 'text', required: true, placeholder: 'Activity name' },
+			{ key: 'A', label: 'Activity A', type: 'activity', required: true, placeholder: 'Activity name' },
+			{ key: 'B', label: 'Activity B', type: 'activity', required: true, placeholder: 'Activity name' },
+			{ key: 'C', label: 'Activity C', type: 'activity', required: true, placeholder: 'Activity name' },
 		]
 	},
 	{
@@ -124,9 +130,9 @@ const templates = [
 		escapeForRegex: true, // make user input safe in a regex
 		format: 'After either "{{A}}" ends or "{{B}}" ends, immediately start "{{C}}".',
 		fields: [
-			{ key: 'A', label: 'Activity A', type: 'text', required: true, placeholder: 'Activity name' },
-			{ key: 'B', label: 'Activity B', type: 'text', required: true, placeholder: 'Activity name' },
-			{ key: 'C', label: 'Activity C', type: 'text', required: true, placeholder: 'Activity name' },
+			{ key: 'A', label: 'Activity A', type: 'activity', required: true, placeholder: 'Activity name' },
+			{ key: 'B', label: 'Activity B', type: 'activity', required: true, placeholder: 'Activity name' },
+			{ key: 'C', label: 'Activity C', type: 'activity', required: true, placeholder: 'Activity name' },
 		]
 	},
 	{
@@ -136,13 +142,12 @@ const templates = [
 		escapeForRegex: true, // make user input safe in a regex
 		format: 'After "{{A}}" ends, immediately repeat since "{{B}}" or start "{{C}}".',
 		fields: [
-			{ key: 'A', label: 'Activity A', type: 'text', required: true, placeholder: 'Activity name' },
-			{ key: 'B', label: 'Activity B', type: 'text', required: true, placeholder: 'Activity name' },
-			{ key: 'C', label: 'Activity C', type: 'text', required: true, placeholder: 'Activity name' },
+			{ key: 'A', label: 'Activity A', type: 'activity', required: true, placeholder: 'Activity name' },
+			{ key: 'B', label: 'Activity B', type: 'activity', required: true, placeholder: 'Activity name' },
+			{ key: 'C', label: 'Activity C', type: 'activity', required: true, placeholder: 'Activity name' },
 		]
 	},
-
-]
+];
 
 const closeDialog = () => {
 	visible.value = false;
